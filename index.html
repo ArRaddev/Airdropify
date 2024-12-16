@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- External Scripts -->
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+    
+    <!-- Meta Tags -->
+    <meta name="monetag" content="cd25396b8bd821eebebde0fd9ff1a1b0">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#000000">
-    <title>Crypto Airdrop Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Page Title -->
+    <title>Airdrop Manager</title>
+
+    <!-- DaisyUI & Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.22/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Additional Styles -->
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #121212;
-            color: #ffffff;
-            height: 100vh;
-            overflow: hidden;
+            background-color: #f9f9f9; /* Light gray */
+            color: #333333; /* Dark gray for text */
         }
-
         .container {
             text-align: center;
             padding: 20px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 20px;
         }
 
         .app-title {
             font-size: 24px;
             font-weight: bold;
             margin-top: 10px;
-            color: #f5ba3a;
+            color: #000000; /* Changed color of the title to black */
         }
 
         .app-subtitle {
@@ -43,7 +48,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 25px;
         }
 
         .menu-item {
@@ -51,18 +56,19 @@
             align-items: center;
             justify-content: flex-start;
             width: 90%;
-            max-width: 350px;
+            max-width: 400px;
             padding: 15px;
-            background-color: #1e1e1e;
+            background-color: #ffffff; /* Menu items retain white background */
+            border: 1px solid #ddd;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
         }
 
         .menu-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
         }
 
         .menu-item-icon {
@@ -72,25 +78,27 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #333333;
+            background-color: #f0f0f0;
             border-radius: 50%;
         }
 
         .menu-item-text {
             font-size: 18px;
             font-weight: bold;
-            color: #f5f5f5;
+            color: #333333;
         }
 
         .full-page {
             display: none;
-            background-color: #1e1e1e;
+            background-color: #f9f9f9; /* Matches background */
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             overflow-y: auto;
+            border-radius: 0;
+            box-shadow: none;
             padding: 20px;
             z-index: 1000;
         }
@@ -103,7 +111,7 @@
             font-size: 20px;
             margin-bottom: 15px;
             font-weight: bold;
-            color: #f5ba3a;
+            color: #f9f9f9;
         }
 
         .full-page-content {
@@ -112,25 +120,23 @@
 
         .input-field {
             width: 100%;
-            max-width: 350px;
-            padding: 10px;
-            margin-bottom: 15px;
+            max-width: 300px;
+            padding: 8px;
+            margin-bottom: 10px;
             border-radius: 5px;
-            border: 1px solid #444444;
-            background-color: #333333;
-            color: #ffffff;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            color: #333333;
             font-size: 14px;
         }
 
         .action-button {
             padding: 10px 20px;
-            background-color: #f5ba3a;
-            color: #121212;
+            background-color: #ffd700; /* Button remains gold */
+            color: #001f3f; /* Button text remains dark blue */
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            width: 100%;
-            max-width: 350px;
         }
 
         .action-button:hover {
@@ -138,14 +144,13 @@
         }
 
         .back-button {
-            padding: 10px;
-            background-color: #444444;
-            color: white;
+            padding: 10px 20px;
+            background-color: #cccccc;
+            color: #001f3f;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            width: 100%;
-            max-width: 350px;
+            margin-bottom: 20px;
         }
 
         .back-button:hover {
@@ -154,14 +159,9 @@
 
         .copyright {
             text-align: center;
-            margin-top: auto;
+            margin-top: 20px;
             font-size: 14px;
-            color: #666666;
-        }
-
-        /* Remove scrollbars for a cleaner app-like appearance */
-        ::-webkit-scrollbar {
-            display: none;
+            color: #cccccc;
         }
 
         /* Mobile Optimization */
@@ -174,35 +174,37 @@
                 font-size: 14px;
             }
 
+            .menu {
+                gap: 20px;
+            }
+
             .menu-item {
+                width: 100%;
                 padding: 10px;
             }
 
             .menu-item-icon {
-                width: 35px;
-                height: 35px;
+                width: 30px;
+                height: 30px;
+                margin-right: 10px;
             }
 
             .menu-item-text {
                 font-size: 16px;
             }
 
-            .input-field {
-                font-size: 14px;
-                padding: 10px;
-            }
-
-            .action-button, .back-button {
-                font-size: 14px;
+            .full-page-header {
+                font-size: 18px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="app-title">Crypto Airdrop Manager</div>
+        <!-- Logo/icon remains unchanged -->
+        <img src="C:/Users/musah/OneDrive/Documents/htdocs/your-icon.png" alt="App Icon" width="100" height="100" style="margin-bottom: 10px;">
+        <div class="app-title">Airdrop Manager</div> <!-- Updated color to black -->
         <div class="app-subtitle">Managing airdrops efficiently</div>
-
         <div class="menu">
             <div class="menu-item" id="newAirdropBtn">
                 <div class="menu-item-icon">💰</div>
@@ -225,11 +227,9 @@
                 <div class="menu-item-text">Get Free Crypto</div>
             </div>
         </div>
-        <div class="copyright">
-            &copy; 2024 AR RAD. All rights reserved.
-        </div>
     </div>
 
+    <!-- Full Page for New Airdrop -->
     <div class="full-page" id="newAirdropPage">
         <button class="back-button" onclick="goBack()">Back</button>
         <div class="full-page-header">Add New Airdrop</div>
@@ -243,7 +243,7 @@
             <button class="action-button" onclick="saveAirdrop()">Save</button>
         </div>
     </div>
-
+    <!-- Full Page for My Airdrops -->
     <div class="full-page" id="myAirdropsPage">
         <button class="back-button" onclick="goBack()">Back</button>
         <div class="full-page-header">My Airdrops</div>
@@ -254,6 +254,7 @@
         </div>
     </div>
 
+    <!-- Full Page for Your Reward -->
     <div class="full-page" id="yourRewardPage">
         <button class="back-button" onclick="goBack()">Back</button>
         <div class="full-page-header">Your Reward</div>
@@ -278,6 +279,7 @@
         const airdropList = document.getElementById('airdropList');
         let airdrops = JSON.parse(localStorage.getItem('airdrops')) || [];
 
+        // Event listeners for menu buttons
         newAirdropBtn.addEventListener('click', () => {
             newAirdropPage.classList.add('active');
         });
@@ -299,12 +301,14 @@
             window.location.href = "https://wwp.aifolr.com/redirect-zone/d4e51a15";
         });
 
+        // Back button functionality
         function goBack() {
             newAirdropPage.classList.remove('active');
             myAirdropsPage.classList.remove('active');
             yourRewardPage.classList.remove('active');
         }
 
+        // Save airdrop
         function saveAirdrop() {
             const name = document.getElementById('airdropName').value;
             const website = document.getElementById('websiteLink').value;
@@ -327,6 +331,7 @@
             }
         }
 
+        // Display airdrops
         function displayAirdrops() {
             airdropList.innerHTML = '';
             airdrops.forEach((airdrop, index) => {
@@ -344,61 +349,14 @@
             });
         }
 
+        // Remove airdrop
         function removeAirdrop(index) {
             airdrops.splice(index, 1);
             localStorage.setItem('airdrops', JSON.stringify(airdrops));
             displayAirdrops();
         }
 
-        // Display scams
-        function displayScams() {
-            scamList.innerHTML = '';
-            scams.forEach((scam, index) => {
-                const listItem = document.createElement('li');
-                listItem.classList.add('scam-item');
-                listItem.innerHTML = `
-                    <strong>${scam}</strong>
-                    <button class="remove-button" onclick="removeScam(${index})">Remove</button>
-                `;
-                scamList.appendChild(listItem);
-            });
-        }
-
-        // Flag scam
-        function flagScam() {
-            const scamUrl = document.getElementById('scamUrl').value;
-            if (scamUrl) {
-                scams.push(scamUrl);
-                localStorage.setItem('scams', JSON.stringify(scams));
-                document.getElementById('scamUrl').value = '';
-                displayScams();
-            }
-        }
-
-        // Remove scam
-        function removeScam(index) {
-            scams.splice(index, 1);
-            localStorage.setItem('scams', JSON.stringify(scams));
-            displayScams();
-        }
-
-        // Profile picture upload
-        fileInput.addEventListener('change', function () {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                profilePic.src = e.target.result;
-                localStorage.setItem('profilePic', e.target.result);
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-        });
-
-        // Load saved profile pic
-        const savedProfilePic = localStorage.getItem('profilePic');
-        if (savedProfilePic) {
-            profilePic.src = savedProfilePic;
-        }
-
-        // Initial load
+                // Initial load
         displayAirdrops();
         displayScams();
     </script>
