@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <title>Crypto Airdrop Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .app-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #f5ba3a;
+        }
+
+        .app-subtitle {
+            font-size: 16px;
+            color: #cccccc;
+            margin-bottom: 20px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            width: 90%;
+            max-width: 350px;
+            padding: 15px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.6);
+        }
+
+        .menu-item-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #333333;
+            border-radius: 50%;
+        }
+
+        .menu-item-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #f5f5f5;
+        }
+
+        .full-page {
+            display: none;
+            background-color: #1e1e1e;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .full-page.active {
+            display: block;
+        }
+
+        .full-page-header {
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #f5ba3a;
+        }
+
+        .full-page-content {
+            margin-top: 20px;
+        }
+
+        .input-field {
+            width: 100%;
+            max-width: 350px;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #444444;
+            background-color: #333333;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .action-button {
+            padding: 10px 20px;
+            background-color: #f5ba3a;
+            color: #121212;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .action-button:hover {
+            opacity: 0.8;
+        }
+
+        .back-button {
+            padding: 10px;
+            background-color: #444444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .back-button:hover {
+            opacity: 0.8;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: auto;
+            font-size: 14px;
+            color: #666666;
+        }
+
+        /* Remove scrollbars for a cleaner app-like appearance */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 600px) {
+            .app-title {
+                font-size: 20px;
+            }
+
+            .app-subtitle {
+                font-size: 14px;
+            }
+
+            .menu-item {
+                padding: 10px;
+            }
+
+            .menu-item-icon {
+                width: 35px;
+                height: 35px;
+            }
+
+            .menu-item-text {
+                font-size: 16px;
+            }
+
+            .input-field {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .action-button, .back-button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-title">Crypto Airdrop Manager</div>
+        <div class="app-subtitle">Managing airdrops efficiently</div>
+
+        <div class="menu">
+            <div class="menu-item" id="newAirdropBtn">
+                <div class="menu-item-icon">💰</div>
+                <div class="menu-item-text">New Airdrop</div>
+            </div>
+            <div class="menu-item" id="myAirdropsBtn">
+                <div class="menu-item-icon">📑</div>
+                <div class="menu-item-text">My Airdrops</div>
+            </div>
+            <div class="menu-item" id="yourRewardBtn">
+                <div class="menu-item-icon">🏆</div>
+                <div class="menu-item-text">Your Reward</div>
+            </div>
+            <div class="menu-item" id="exchangeBtn">
+                <div class="menu-item-icon">🔄</div>
+                <div class="menu-item-text">Exchange</div>
+            </div>
+            <div class="menu-item" id="freeCryptoBtn">
+                <div class="menu-item-icon">🎁</div>
+                <div class="menu-item-text">Get Free Crypto</div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2024 AR RAD. All rights reserved.
+        </div>
+    </div>
+
+    <div class="full-page" id="newAirdropPage">
+        <button class="back-button" onclick="goBack()">Back</button>
+        <div class="full-page-header">Add New Airdrop</div>
+        <div class="full-page-content">
+            <input class="input-field" type="text" id="airdropName" placeholder="Airdrop Name" />
+            <input class="input-field" type="url" id="websiteLink" placeholder="Website (Link)" />
+            <input class="input-field" type="url" id="checkInLink" placeholder="Daily Check-in (Link)" />
+            <input class="input-field" type="url" id="transactionLink" placeholder="Daily Transaction (Link)" />
+            <input class="input-field" type="number" id="fundingAmount" placeholder="Funding (Amount)" />
+            <input class="input-field" type="date" id="expectedDate" placeholder="Airdrop Expected Date" />
+            <button class="action-button" onclick="saveAirdrop()">Save</button>
+        </div>
+    </div>
+
+    <div class="full-page" id="myAirdropsPage">
+        <button class="back-button" onclick="goBack()">Back</button>
+        <div class="full-page-header">My Airdrops</div>
+        <div class="full-page-content">
+            <ul class="airdrop-list" id="airdropList">
+                <!-- Airdrops will be displayed here dynamically -->
+            </ul>
+        </div>
+    </div>
+
+    <div class="full-page" id="yourRewardPage">
+        <button class="back-button" onclick="goBack()">Back</button>
+        <div class="full-page-header">Your Reward</div>
+        <div class="full-page-content">
+            <p>Sumit Yout Celo<a href="https://t.me/ArAirdropify_bot" target="_blank">@ArAirdropify_bot</a>once a week.</p>
+        </div>
+    </div>
+
+    <div class="copyright">
+        &copy; 2024 AR RAD. All rights reserved.
+    </div>
+
+    <script>
+        const newAirdropBtn = document.getElementById('newAirdropBtn');
+        const myAirdropsBtn = document.getElementById('myAirdropsBtn');
+        const yourRewardBtn = document.getElementById('yourRewardBtn');
+        const exchangeBtn = document.getElementById('exchangeBtn');
+        const freeCryptoBtn = document.getElementById('freeCryptoBtn');
+        const newAirdropPage = document.getElementById('newAirdropPage');
+        const myAirdropsPage = document.getElementById('myAirdropsPage');
+        const yourRewardPage = document.getElementById('yourRewardPage');
+        const airdropList = document.getElementById('airdropList');
+        let airdrops = JSON.parse(localStorage.getItem('airdrops')) || [];
+
+        newAirdropBtn.addEventListener('click', () => {
+            newAirdropPage.classList.add('active');
+        });
+
+        myAirdropsBtn.addEventListener('click', () => {
+            myAirdropsPage.classList.add('active');
+            displayAirdrops();
+        });
+
+        yourRewardBtn.addEventListener('click', () => {
+            alert('This feature is coming soon!');
+        });
+
+        exchangeBtn.addEventListener('click', () => {
+            alert('Feature coming soon');
+        });
+
+        freeCryptoBtn.addEventListener('click', () => {
+            window.location.href = "https://wwp.aifolr.com/redirect-zone/d4e51a15";
+        });
+
+        function goBack() {
+            newAirdropPage.classList.remove('active');
+            myAirdropsPage.classList.remove('active');
+            yourRewardPage.classList.remove('active');
+        }
+
+        function saveAirdrop() {
+            const name = document.getElementById('airdropName').value;
+            const website = document.getElementById('websiteLink').value;
+            const checkIn = document.getElementById('checkInLink').value;
+            const transaction = document.getElementById('transactionLink').value;
+            const funding = document.getElementById('fundingAmount').value;
+            const expectedDate = document.getElementById('expectedDate').value;
+
+            if (name && website && funding && expectedDate) {
+                const newAirdrop = { name, website, checkIn, transaction, funding, expectedDate };
+                airdrops.push(newAirdrop);
+                localStorage.setItem('airdrops', JSON.stringify(airdrops));
+                document.getElementById('airdropName').value = '';
+                document.getElementById('websiteLink').value = '';
+                document.getElementById('checkInLink').value = '';
+                document.getElementById('transactionLink').value = '';
+                document.getElementById('fundingAmount').value = '';
+                document.getElementById('expectedDate').value = '';
+                displayAirdrops();
+            }
+        }
+
+        function displayAirdrops() {
+            airdropList.innerHTML = '';
+            airdrops.forEach((airdrop, index) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <strong>${airdrop.name}</strong><br>
+                    <a href="${airdrop.website}" target="_blank">Website</a> |
+                    <a href="${airdrop.checkIn}" target="_blank">Daily Check-in</a> |
+                    <a href="${airdrop.transaction}" target="_blank">Daily Transaction</a><br>
+                    Funding: ${airdrop.funding}<br>
+                    Expected Date: ${airdrop.expectedDate}<br>
+                    <button class="remove-button" onclick="removeAirdrop(${index})">Remove</button>
+                `;
+                airdropList.appendChild(listItem);
+            });
+        }
+
+        function removeAirdrop(index) {
+            airdrops.splice(index, 1);
+            localStorage.setItem('airdrops', JSON.stringify(airdrops));
+            displayAirdrops();
+        }
+
+        // Display scams
+        function displayScams() {
+            scamList.innerHTML = '';
+            scams.forEach((scam, index) => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('scam-item');
+                listItem.innerHTML = `
+                    <strong>${scam}</strong>
+                    <button class="remove-button" onclick="removeScam(${index})">Remove</button>
+                `;
+                scamList.appendChild(listItem);
+            });
+        }
+
+        // Flag scam
+        function flagScam() {
+            const scamUrl = document.getElementById('scamUrl').value;
+            if (scamUrl) {
+                scams.push(scamUrl);
+                localStorage.setItem('scams', JSON.stringify(scams));
+                document.getElementById('scamUrl').value = '';
+                displayScams();
+            }
+        }
+
+        // Remove scam
+        function removeScam(index) {
+            scams.splice(index, 1);
+            localStorage.setItem('scams', JSON.stringify(scams));
+            displayScams();
+        }
+
+        // Profile picture upload
+        fileInput.addEventListener('change', function () {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                profilePic.src = e.target.result;
+                localStorage.setItem('profilePic', e.target.result);
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        });
+
+        // Load saved profile pic
+        const savedProfilePic = localStorage.getItem('profilePic');
+        if (savedProfilePic) {
+            profilePic.src = savedProfilePic;
+        }
+
+        // Initial load
+        displayAirdrops();
+        displayScams();
+    </script>
+</body>
+</html>
