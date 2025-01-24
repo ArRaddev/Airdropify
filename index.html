@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airdrop Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .progress-ring {
+            transform: rotate(-90deg);
+            transition: transform 0.5s ease-in-out;
+        }
+        .progress-ring:hover {
+            transform: rotate(-90deg) scale(1.05);
+        }
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.8s ease-in-out;
+            transform-origin: 50% 50%;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button:hover {
+            transform: translateY(-2px);
+        }
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Home Page -->
+    <div id="homePage" class="container mx-auto px-4 py-6 max-w-md fade-in">
+        <h1 class="text-2xl font-bold text-center mb-6">Airdrop Manager</h1>
+        
+        <!-- Progress Circle -->
+        <div class="mb-8 flex flex-col items-center">
+            <div class="relative">
+                <svg class="progress-ring" width="180" height="180">
+                    <circle class="text-gray-700" stroke="currentColor" stroke-width="12" fill="transparent" r="80" cx="90" cy="90"/>
+                    <circle class="progress-ring-circle text-blue-500" stroke="currentColor" stroke-width="12" fill="transparent" r="80" cx="90" cy="90"
+                        stroke-dasharray="502.6548245743669"
+                        stroke-dashoffset="502.6548245743669"/>
+                </svg>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                    <span id="progressPercentage" class="text-3xl font-bold">0%</span>
+                    <div class="text-sm text-gray-400 mt-1"><span id="completedTasks">0</span>/100</div>
+                </div>
+            </div>
+            <div class="mt-4 text-center text-lg">Total Airdrops Completed</div>
+        </div>
+
+        <!-- Airdrop Details -->
+        <div class="space-y-4">
+            <h2 class="text-xl font-semibold mb-4">Airdrop Details</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-300 mb-2">Airdrop Name</label>
+                    <input type="text" id="airdropName" placeholder="Enter Airdrop Name" class="w-full bg-gray-800 rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-2">Website</label>
+                    <input type="url" id="website" placeholder="Enter Website" class="w-full bg-gray-800 rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-2">Daily Check-in Link</label>
+                    <input type="url" id="checkinLink" placeholder="Enter Check-in Link" class="w-full bg-gray-800 rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-2">Daily Transaction Link</label>
+                    <input type="url" id="transactionLink" placeholder="Enter Transaction Link" class="w-full bg-gray-800 rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-2">Expected Date</label>
+                    <input type="date" id="expectedDate" class="w-full bg-gray-800 rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-2">Funding</label>
+                    <input type="text" id="funding" placeholder="Enter Funding" class="w-full bg-gray-800 rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <button id="saveButton" class="w-full bg-blue-500 text-white rounded-lg py-3 mt-6 hover:bg-blue-600 transition duration-300">
+                Save
+            </button>
+        </div>
+    </div>
+
+    <!-- My Airdrops Page (Hidden by default) -->
+    <div id="myAirdropsPage" class="hidden container mx-auto px-4 py-6 max-w-md">
+        <h2 class="text-xl font-semibold mb-4">My Airdrops</h2>
+        <div id="airdropsList" class="space-y-4">
+            <!-- Airdrops will be inserted here -->
+        </div>
+    </div>
+
+    <!-- Rewards Page (Hidden by default) -->
+    <div id="rewardsPage" class="hidden container mx-auto px-4 py-6 max-w-md">
+        <h2 class="text-xl font-semibold mb-6 text-center">Rewards</h2>
+        
+        <!-- Earn AP Points Section -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-6 text-center slide-up">
+            <h3 class="text-lg font-semibold mb-4">Earn Airdrop Points</h3>
+            <a href="https://wwp.aifolr.com/redirect-zone/d4e51a15" 
+               target="_blank" 
+               onclick="earnPoints(10)"
+               class="inline-block bg-blue-500 text-white rounded-lg px-6 py-3 hover:bg-blue-600 transition duration-300">
+                Earn 10 Airdrop Points by Clicking Here!
+            </a>
+            <div id="earnSuccess" class="hidden mt-4 text-green-400"></div>
+        </div>
+
+        <!-- Rewards Balance Section -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-6 text-center slide-up" style="animation-delay: 0.1s">
+            <h3 class="text-lg font-semibold mb-2">Your Airdrop Points</h3>
+            <div class="text-3xl font-bold text-blue-400 mb-2">
+                <span id="pointsBalance">0</span> AP
+            </div>
+            <p class="text-gray-400">Keep earning AP Points to unlock Crypto rewards💰!</p>
+        </div>
+
+        <!-- Claim Rewards Section -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-6 slide-up" style="animation-delay: 0.2s">
+            <h3 class="text-lg font-semibold mb-4 text-center">Claim Rewards</h3>
+            <p class="text-gray-400 text-center">
+                This Feature is coming soon!
+            </p>
+        </div>
+
+        <!-- Withdrawal Section -->
+        <button onclick="showWithdrawModal()" 
+                class="w-full bg-blue-500 text-white rounded-lg py-3 hover:bg-blue-600 transition duration-300 slide-up"
+                style="animation-delay: 0.3s">
+            Withdraw Points
+        </button>
+    </div>
+
+    <!-- Copyright -->
+    <div class="text-center text-gray-400 text-sm pb-20 pt-4">
+        2024-25 AR RAD. All rights reserved.
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdrawModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-gray-800 rounded-lg p-6 max-w-sm mx-4 fade-in">
+            <h3 class="text-xl font-semibold mb-2">Feature Coming Soon!</h3>
+            <p class="text-gray-400 mb-4">Stay tuned! You'll soon be able to withdraw your points directly.</p>
+            <button onclick="hideWithdrawModal()" 
+                    class="w-full bg-blue-500 text-white rounded-lg py-2 hover:bg-blue-600 transition duration-300">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+        <div class="bg-gray-800 rounded-lg p-6 max-w-sm mx-4 fade-in shadow-lg border border-gray-700">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-3 text-blue-400">Welcome to Airdrop Manager</h3>
+                <p class="text-lg font-medium mb-2 text-white">Trusted By Crypto Bhai</p>
+                <div class="text-left mt-4 mb-4 text-gray-300 space-y-2 text-sm">
+                    <p class="flex items-center"><i class="fas fa-check-circle text-green-400 mr-2"></i> Track all your crypto airdrops in one place</p>
+                    <p class="flex items-center"><i class="fas fa-check-circle text-green-400 mr-2"></i> Daily check-in reminders soon</p>
+                    <p class="flex items-center"><i class="fas fa-check-circle text-green-400 mr-2"></i> Monitor transaction requirements</p>
+                    <p class="flex items-center"><i class="fas fa-check-circle text-green-400 mr-2"></i> Earn points for rewards</p>
+                </div>
+                <button onclick="hideWelcomeModal()" 
+                        class="w-full bg-blue-500 text-white rounded-lg py-2.5 font-medium hover:bg-blue-600 transition duration-300">
+                    Get Started
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">
+        <div class="max-w-md mx-auto flex justify-between">
+            <button id="homeNav" class="flex flex-col items-center text-blue-500 nav-button" onclick="showPage('homePage')">
+                <i class="fas fa-home mb-1"></i>
+                <span class="text-xs">Home</span>
+                <div class="w-full h-0.5 bg-blue-500 mt-1 transition-all duration-300"></div>
+            </button>
+            <button id="airdropsNav" class="flex flex-col items-center text-gray-400 nav-button" onclick="showPage('myAirdropsPage')">
+                <i class="fas fa-gift mb-1"></i>
+                <span class="text-xs">My Airdrops</span>
+                <div class="w-full h-0.5 bg-blue-500 mt-1 opacity-0 transition-all duration-300"></div>
+            </button>
+            <button id="exchangeNav" class="flex flex-col items-center text-gray-400 nav-button">
+                <i class="fas fa-exchange-alt mb-1"></i>
+                <span class="text-xs">Exchange</span>
+                <div class="w-full h-0.5 bg-blue-500 mt-1 opacity-0 transition-all duration-300"></div>
+            </button>
+            <button id="rewardsNav" class="flex flex-col items-center text-gray-400 nav-button" onclick="showPage('rewardsPage')">
+                <i class="fas fa-award mb-1"></i>
+                <span class="text-xs">Rewards</span>
+                <div class="w-full h-0.5 bg-blue-500 mt-1 opacity-0 transition-all duration-300"></div>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // Initialize stored airdrops from localStorage
+        let airdrops = JSON.parse(localStorage.getItem('airdrops')) || [];
+        let apPoints = parseInt(localStorage.getItem('apPoints')) || 0;
+        
+        // Welcome Modal Functions
+        function hideWelcomeModal() {
+            document.getElementById('welcomeModal').style.display = 'none';
+        }
+
+        // Show welcome modal on page load
+        window.addEventListener('load', () => {
+            document.getElementById('welcomeModal').style.display = 'flex';
+        });
+        
+        // Update progress circle
+        function updateProgress() {
+            const totalTasks = 100;
+            const completedTasks = Math.min(airdrops.length, totalTasks);
+            const percentage = Math.round((completedTasks / totalTasks) * 100);
+            
+            const circle = document.querySelector('.progress-ring-circle');
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            const offset = circumference - (percentage / 100) * circumference;
+            
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = offset;
+            
+            // Add pulse animation when reaching milestones
+            const percentageElement = document.getElementById('progressPercentage');
+            percentageElement.textContent = `${percentage}%`;
+            if (percentage > 0 && percentage % 25 === 0) {
+                percentageElement.classList.add('pulse-animation');
+                setTimeout(() => {
+                    percentageElement.classList.remove('pulse-animation');
+                }, 2000);
+            }
+            
+            document.getElementById('completedTasks').textContent = completedTasks;
+        }
+
+        // Points System Functions
+        function updatePointsDisplay() {
+            document.getElementById('pointsBalance').textContent = apPoints;
+        }
+
+        function earnPoints(amount) {
+            apPoints += amount;
+            localStorage.setItem('apPoints', apPoints);
+            updatePointsDisplay();
+            
+            const successElement = document.getElementById('earnSuccess');
+            successElement.textContent = `Congratulations! You have earned ${amount} AP Points.`;
+            successElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                successElement.classList.add('hidden');
+            }, 3000);
+        }
+
+        function showWithdrawModal() {
+            document.getElementById('withdrawModal').classList.remove('hidden');
+        }
+
+        function hideWithdrawModal() {
+            document.getElementById('withdrawModal').classList.add('hidden');
+        }
+
+        // Function to save airdrop with animation
+        document.getElementById('saveButton').addEventListener('click', () => {
+            // Get all input values
+            const name = document.getElementById('airdropName').value;
+            const website = document.getElementById('website').value;
+            const checkinLink = document.getElementById('checkinLink').value;
+            const transactionLink = document.getElementById('transactionLink').value;
+            const expectedDate = document.getElementById('expectedDate').value;
+            const funding = document.getElementById('funding').value;
+
+            // Validate inputs
+            if (!name || !website || !expectedDate) {
+                alert('Please fill in at least the Airdrop Name, Website, and Expected Date');
+                return;
+            }
+
+            const airdrop = {
+                name,
+                website,
+                checkinLink,
+                transactionLink,
+                expectedDate,
+                funding,
+                dateAdded: new Date().toISOString(),
+                status: 'Active'
+            };
+
+            // Add save animation with success message
+            const saveButton = document.getElementById('saveButton');
+            saveButton.classList.add('bg-green-500');
+            saveButton.innerHTML = '<i class="fas fa-check mr-2"></i>Saved Successfully!';
+            
+            // Save to localStorage
+            airdrops.push(airdrop);
+            localStorage.setItem('airdrops', JSON.stringify(airdrops));
+            
+            // Clear form with smooth transition
+            document.querySelectorAll('input').forEach(input => {
+                input.style.transition = 'all 0.3s ease';
+                input.value = '';
+            });
+            
+            // Update UI
+            renderAirdrops();
+            updateProgress();
+
+            // Reset button after delay
+            setTimeout(() => {
+                saveButton.classList.remove('bg-green-500');
+                saveButton.innerHTML = 'Save';
+            }, 2000);
+
+            // Show success notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-20 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg fade-in';
+            notification.innerHTML = `Airdrop "${name}" has been saved!`;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        });
+
+        // Function to render airdrops
+        function renderAirdrops() {
+            const airdropsList = document.getElementById('airdropsList');
+            airdropsList.innerHTML = '';
+
+            if (airdrops.length === 0) {
+                airdropsList.innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        No airdrops saved yet.
+                    </div>
+                `;
+                return;
+            }
+
+            airdrops.forEach((airdrop, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-gray-800 rounded-lg p-4 space-y-2 fade-in';
+                card.innerHTML = `
+                    <h3 class="font-semibold">${airdrop.name}</h3>
+                    <p><a href="${airdrop.website}" target="_blank" class="text-blue-400">Website</a></p>
+                    <p><a href="${airdrop.checkinLink}" target="_blank" class="text-blue-400">Daily Check-in</a></p>
+                    <p><a href="${airdrop.transactionLink}" target="_blank" class="text-blue-400">Daily Transaction</a></p>
+                    <p>Expected Date: ${airdrop.expectedDate}</p>
+                    <p>Funding: ${airdrop.funding}</p>
+                    <button onclick="deleteAirdrop(${index})" class="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300">
+                        Delete
+                    </button>
+                `;
+                airdropsList.appendChild(card);
+            });
+        }
+
+        // Function to delete airdrop
+        function deleteAirdrop(index) {
+            if (confirm('Are you sure you want to delete this airdrop?')) {
+                airdrops.splice(index, 1);
+                localStorage.setItem('airdrops', JSON.stringify(airdrops));
+                renderAirdrops();
+                updateProgress();
+            }
+        }
+
+        // Function to show/hide pages and update navigation with animation
+        function showPage(pageId) {
+            // Hide all pages
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('myAirdropsPage').classList.add('hidden');
+            document.getElementById('rewardsPage').classList.add('hidden');
+            
+            // Show selected page with fade-in animation
+            const selectedPage = document.getElementById(pageId);
+            selectedPage.classList.remove('hidden');
+            selectedPage.classList.add('fade-in');
+
+            // Reset all nav buttons to inactive state
+            const navButtons = ['homeNav', 'airdropsNav', 'exchangeNav', 'rewardsNav'];
+            navButtons.forEach(navId => {
+                const button = document.getElementById(navId);
+                button.classList.remove('text-blue-500');
+                button.classList.add('text-gray-400');
+                button.querySelector('div').classList.add('opacity-0');
+            });
+
+            // Set active state for current page with animation
+            let activeNavId;
+            switch(pageId) {
+                case 'homePage':
+                    activeNavId = 'homeNav';
+                    break;
+                case 'myAirdropsPage':
+                    activeNavId = 'airdropsNav';
+                    break;
+                case 'rewardsPage':
+                    activeNavId = 'rewardsNav';
+                    break;
+            }
+
+            if (activeNavId) {
+                const activeButton = document.getElementById(activeNavId);
+                activeButton.classList.remove('text-gray-400');
+                activeButton.classList.add('text-blue-500');
+                activeButton.querySelector('div').classList.remove('opacity-0');
+            }
+
+            if (pageId === 'myAirdropsPage') {
+                renderAirdrops();
+            }
+        }
+
+        // Initial render and updates
+        renderAirdrops();
+        updateProgress();
+        updatePointsDisplay();
+    </script>
+</body>
+</html>
