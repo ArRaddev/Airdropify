@@ -129,6 +129,13 @@
                 Earn 10 Airdrop Points by Clicking Here!
             </a>
             <div id="earnSuccess" class="hidden mt-4 text-green-400"></div>
+            <!-- Add Community Button -->
+            <a href="https://t.me/AirdropManagerArRad" 
+               target="_blank" 
+               onclick="joinCommunity()"
+               class="inline-block bg-blue-500 text-white rounded-lg px-6 py-3 mt-4 hover:bg-blue-600 transition duration-300">
+                Join Our Community
+            </a>
         </div>
 
         <!-- Rewards Balance Section -->
@@ -138,14 +145,6 @@
                 <span id="pointsBalance">0</span> AP
             </div>
             <p class="text-gray-400">Keep earning AP Points to unlock Crypto rewards💰!</p>
-        </div>
-
-        <!-- Claim Rewards Section -->
-        <div class="bg-gray-800 rounded-lg p-6 mb-6 slide-up" style="animation-delay: 0.2s">
-            <h3 class="text-lg font-semibold mb-4 text-center">Claim Rewards</h3>
-            <p class="text-gray-400 text-center">
-                This Feature is coming soon!
-            </p>
         </div>
 
         <!-- Withdrawal Section -->
@@ -223,6 +222,7 @@
         // Initialize stored airdrops from localStorage
         let airdrops = JSON.parse(localStorage.getItem('airdrops')) || [];
         let apPoints = parseInt(localStorage.getItem('apPoints')) || 0;
+        let hasJoinedCommunity = localStorage.getItem('hasJoinedCommunity') === 'true';
         
         // Welcome Modal Functions
         function hideWelcomeModal() {
@@ -278,6 +278,17 @@
             setTimeout(() => {
                 successElement.classList.add('hidden');
             }, 3000);
+        }
+
+        function joinCommunity() {
+            if (!hasJoinedCommunity) {
+                earnPoints(100);
+                hasJoinedCommunity = true;
+                localStorage.setItem('hasJoinedCommunity', 'true');
+                alert('You have received 100 points for joining the community!');
+            } else {
+                alert('You have already joined the community and received your points.');
+            }
         }
 
         function showWithdrawModal() {
